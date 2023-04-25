@@ -2,6 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { nanoid } from 'nanoid';
 import { useLocalStorage } from 'usehooks-ts';
 import { z } from 'zod';
 
@@ -22,12 +23,21 @@ const formSchema = z
         },
       })
       .default('client'),
-    car: z
-      .string()
-      .min(3, 'O carro deve conter pelo menos 3 caracteres')
-      .max(255)
-      .optional(),
+    car: z.string().default(''),
   })
+  .refine(
+    (fields) => {
+      if (fields.role == 'mechanic') {
+        return true;
+      }
+
+      return fields.car.length >= 3;
+    },
+    {
+      message: 'O carro deve conter pelo menos 3 caracteres',
+      path: ['car'],
+    },
+  )
   .transform((fields) => {
     if (fields.role === 'client') {
       return {
@@ -53,6 +63,7 @@ const register: React.FC = () => {
     handleSubmit,
     formState: { errors },
     watch,
+    reset,
   } = useForm<FormProps>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,7 +74,12 @@ const register: React.FC = () => {
 
   const onSubmit = (dataForm: FormProps) => {
     console.log('🚀 ~ file: index.tsx:19 ~ data:', dataForm);
-    setData([...data, dataForm as unknown as TClient | TMechanic]);
+    const newDataForm = {
+      id: nanoid(),
+      ...dataForm,
+    };
+    setData([...data, newDataForm as unknown as TClient | TMechanic]);
+    reset();
   };
 
   return (
