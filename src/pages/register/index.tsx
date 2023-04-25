@@ -1,12 +1,12 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
+import { useUsersStore } from '@/store/users';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { nanoid } from 'nanoid';
-import { useLocalStorage } from 'usehooks-ts';
 import { z } from 'zod';
 
-import { TClient, TMechanic, TService } from '../../../@types';
+import { TService } from '../../../@types';
 
 const formSchema = z
   .object({
@@ -57,7 +57,9 @@ const formSchema = z
 type FormProps = z.infer<typeof formSchema>;
 
 const register: React.FC = () => {
-  const [data, setData] = useLocalStorage<(TClient | TMechanic)[]>('data', []);
+  const { addUser } = useUsersStore((state) => state);
+  const state = useUsersStore(({ state }) => state);
+  console.log('🚀 ~ file: index.tsx:62 ~ state:', state);
   const {
     register,
     handleSubmit,
@@ -78,7 +80,7 @@ const register: React.FC = () => {
       id: nanoid(),
       ...dataForm,
     };
-    setData([...data, newDataForm as unknown as TClient | TMechanic]);
+    addUser(newDataForm);
     reset();
   };
 
