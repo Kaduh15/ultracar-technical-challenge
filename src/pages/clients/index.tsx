@@ -1,42 +1,52 @@
 'use client';
 
-import React from 'react';
+import React, { InputHTMLAttributes } from 'react';
 import QRCode from 'react-qr-code';
 
-import { useLocalStorage } from 'usehooks-ts';
+import { useUsersStore } from '@/store/users';
 
-import { TMechanic, TClient } from '../../../@types';
+import { TClient } from '../../../@types';
 
 const clients: React.FC = () => {
-  const [data, setData] = useLocalStorage<(TClient | TMechanic)[]>('data', []);
+  const { getClients } = useUsersStore((store) => store);
   const [clientSelected, setClientSelected] = React.useState<TClient | null>();
-  const clients = data.filter((item) => item.role === 'client') as TClient[];
+  const clients = getClients();
 
-  const handleSelectClient = (client: TClient) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    const client = clients?.find(
+      (client) => client.name.toLocaleLowerCase() === value.toLocaleLowerCase(),
+    );
     setClientSelected(client);
   };
 
   return (
-    <main className="text-white flex flex-col items-center justify-center h-screen">
-      <h1>Clientes</h1>
-      {clients && (
-        <ul>
-          {clients.map((client) => (
-            <li key={client.id}>
-              <p>
-                {client.name} - {client.car}
-              </p>
-              <button type="button" onClick={() => handleSelectClient(client)}>
-                Selecionar
-              </button>
-            </li>
+    <main className="flex flex-col items-center justify-center h-screen text-white gap-6">
+      <h1 className="text-6xl">Cliente</h1>
+      <input
+        className="text-black w-56"
+        name="searcherClient"
+        id="searcherClient"
+        list="clients"
+        onChange={handleInputChange}
+        placeholder="Digite o nome do cliente"
+      />
+      <datalist className="bg-white border min-w-fit w-56" id="clients">
+        {clients &&
+          clients.map((client: TClient) => (
+            <option
+              className="border min-w-fit w-56 haver:bg-blue-500 active:bg-blue-500"
+              key={client.id}
+              value={client.name}
+            />
           ))}
-        </ul>
+      </datalist>
+
+      {!!clientSelected && (
+        <>
+          <QRCode value={clientSelected.id} />
+        </>
       )}
-      {!clients.length && (
-        <p className="font-semibold">Nenhum cliente cadastrado</p>
-      )}
-      {clientSelected && <QRCode value={clientSelected.id} />}
     </main>
   );
 };
