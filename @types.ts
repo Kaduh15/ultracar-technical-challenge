@@ -9,6 +9,7 @@ export type TClient = {
 } & TPerson;
 
 export type TPart = {
+  id: string;
   name: string;
   price: number;
 };
@@ -17,8 +18,8 @@ export type TService = {
   price: number;
   client: TClient;
   parts: TPart[];
-  initialDate: Date;
-  finishDate?: Date;
+  initialDate: string;
+  finishDate?: string;
 };
 
 export type TMechanic = {

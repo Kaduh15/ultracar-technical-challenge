@@ -1,15 +1,14 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
-import { TClient, TMechanic } from '../../../@types';
+import { TClient, TMechanic, TService } from '../../../@types';
 
 type ActionsProps = {
   addUser: (user: TClient | TMechanic) => void;
-  getUser: (id: string) => TClient | TMechanic | undefined;
+  getUserById: (id: string) => TClient | TMechanic | undefined;
   getClients: () => TClient[];
   getMechanics: () => TMechanic[];
-  getAllUsers: () => (TClient | TMechanic)[];
-  filterClientsByName: (name: string) => TClient[];
+  addService: (mechanicId: string, service: TService) => void;
 };
 
 export type UsersStoreProps = {
@@ -26,7 +25,7 @@ export const useUsersStore = create(
             state: [...state.state, user],
           }));
         },
-        getUser: (id) => {
+        getUserById: (id) => {
           const users = get().state;
           return users.find((user) => user.id === id);
         },
@@ -44,11 +43,19 @@ export const useUsersStore = create(
             (user) => user.role === 'mechanic',
           ) as TMechanic[];
         },
-        filterClientsByName: (name) => {
-          const clients = get().getClients();
-          return clients.filter((client) =>
-            client.name.toLowerCase().includes(name.toLowerCase()),
-          );
+        addService: (mechanicId, service) => {
+          set((state) => {
+            const mechanics = state.state as TMechanic[];
+            const mechanic = mechanics.find(
+              (mechanic) => mechanic.id === mechanicId,
+            );
+            if (mechanic) {
+              mechanic.services.push(service);
+            }
+            return {
+              state: mechanics,
+            };
+          });
         },
       }),
       {
