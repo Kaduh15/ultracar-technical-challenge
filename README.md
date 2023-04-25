@@ -70,28 +70,6 @@ Antes de iniciar :checkered_flag:, você precisa ter [Git](https://git-scm.com),
 
 ## :checkered_flag: Iniciando Projeto ##
 
-### 🐋 Docker Started ###
-```bash
-# Clone this project
-$ git clone https://github.com/kaduh15/ultracar-technical-challenge
-
-# Access
-$ cd ultracar-technical-challenge
-
-# Install dependencies
-$ npm i
-
-# Run the project
-$ npm run compose:dev
-
-# The frontend will initialize in the <http://localhost:3000>
-# The backend will initialize in the <http://localhost:3000>
-```
-
-### Node Start ###
-
-configure os ``.env`` do frontend e backend de acordo com ``.env.exemple``.
-
 ```bash
 # Clone this project
 $ git clone https://github.com/kaduh15/ultracar-technical-challenge
